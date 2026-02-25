@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOP Bakso Bento Malang – Flowchart Terintegrasi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --bg-start: #fdf3e3;
+      --bg-end: #fce8d5;
+      --card-bg: #fffdf9;
+      --card-border: #f0d9c0;
+      --accent: #c05621;
+      --accent-light: #ed8936;
+      --accent-dark: #7b3a15;
+      --text-main: #2d1a0e;
+      --text-sub: #6b4226;
+      --text-muted: #9c7057;
+      --arrow-color: #d97c4a;
+      --badge-bg: #fff3e0;
+      --shadow-sm: 0 2px 8px rgba(180,95,46,0.10);
+      --shadow-md: 0 6px 24px rgba(180,95,46,0.14);
+      --shadow-hover: 0 14px 40px rgba(180,95,46,0.22);
+      --radius: 18px;
+    }
+
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text-main);
+      background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    /* ===== NOISE TEXTURE OVERLAY ===== */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== HEADER ===== */
+    .site-header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+
+    .header-badge {
+      display: inline-block;
+      background: var(--badge-bg);
+      border: 1.5px solid var(--card-border);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+
+    .site-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      color: var(--accent-dark);
+      line-height: 1.15;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .site-header h1 span {
+      color: var(--accent);
+      position: relative;
+      display: inline-block;
+    }
+
+    .site-header h1 span::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-light), var(--accent));
+      border-radius: 4px;
+      opacity: 0.5;
+    }
+
+    .site-header p.subtitle {
+      color: var(--text-sub);
+      font-size: 1.05rem;
+      font-weight: 400;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* ===== STEPPER INDICATOR ===== */
+    .step-indicator {
+      position: fixed;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .step-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--card-border);
+      border: 1.5px solid var(--arrow-color);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .step-dot.active {
+      background: var(--accent);
+      transform: scale(1.4);
+      border-color: var(--accent);
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 30px 32px 28px;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+      opacity: 0;
+      transform: translateY(28px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    .card:hover {
+      transform: translateY(-4px) scale(1.005);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--accent-light);
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stagger delays */
+    .card:nth-child(1)  { animation-delay: 0.05s; }
+    .card:nth-child(3)  { animation-delay: 0.10s; }
+    .card:nth-child(5)  { animation-delay: 0.15s; }
+    .card:nth-child(7)  { animation-delay: 0.20s; }
+    .card:nth-child(9)  { animation-delay: 0.25s; }
+    .card:nth-child(11) { animation-delay: 0.28s; }
+    .card:nth-child(13) { animation-delay: 0.31s; }
+    .card:nth-child(15) { animation-delay: 0.34s; }
+    .card:nth-child(17) { animation-delay: 0.37s; }
+    .card:nth-child(19) { animation-delay: 0.40s; }
+    .card:nth-child(21) { animation-delay: 0.43s; }
+    .card:nth-child(23) { animation-delay: 0.46s; }
+    .card:nth-child(25) { animation-delay: 0.49s; }
+    .card:nth-child(27) { animation-delay: 0.52s; }
+    .card:nth-child(29) { animation-delay: 0.55s; }
+    .card:nth-child(31) { animation-delay: 0.58s; }
+
+    /* ===== CARD HEADER ===== */
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px dashed var(--card-border);
+    }
+
+    .card-num {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      box-shadow: 0 3px 10px rgba(192,86,33,0.3);
+    }
+
+    .card-title-block { flex: 1; }
+
+    .card-icon {
+      font-size: 1.0rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-dark);
+      line-height: 1.3;
+    }
+
+    /* ===== CARD BODY ===== */
+    .card-body {
+      color: var(--text-main);
+      font-size: 0.97rem;
+      word-wrap: break-word;
+    }
+
+    .card-body p {
+      margin-bottom: 10px;
+    }
+
+    .card-body p:last-child { margin-bottom: 0; }
+
+    /* Sections (bold label + content) */
+    .section {
+      margin-bottom: 16px;
+    }
+
+    .section:last-child { margin-bottom: 0; }
+
+    .section-label {
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.95rem;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 14px;
+      background: var(--accent-light);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .section-body {
+      padding-left: 11px;
+      border-left: 2.5px solid var(--card-border);
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    /* Sub-items */
+    .sub-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 5px;
+    }
+
+    .sub-list li {
+      padding: 4px 0 4px 22px;
+      position: relative;
+      font-size: 0.94rem;
+      line-height: 1.55;
+    }
+
+    .sub-list li::before {
+      content: '›';
+      position: absolute;
+      left: 6px;
+      top: 4px;
+      color: var(--accent-light);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    /* Step list (numbered) */
+    .step-list {
+      list-style: none;
+      padding: 0;
+      counter-reset: step;
+    }
+
+    .step-list > li {
+      counter-increment: step;
+      position: relative;
+      padding: 10px 0 10px 46px;
+      border-bottom: 1px dotted var(--card-border);
+    }
+
+    .step-list > li:last-child { border-bottom: none; }
+
+    .step-list > li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--badge-bg);
+      border: 1.5px solid var(--accent-light);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-title {
+      font-weight: 600;
+      color: var(--accent-dark);
+      margin-bottom: 5px;
+    }
+
+    /* Empty card (no content) */
+    .card-empty {
+      text-align: center;
+      padding: 20px 0;
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 0.93rem;
+    }
+
+    .card-empty i {
+      font-size: 2rem;
+      color: var(--card-border);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* ===== ARROW ===== */
+    .arrow-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      padding: 6px 0;
+    }
+
+    .arrow-line {
+      width: 2px;
+      height: 28px;
+      background: repeating-linear-gradient(
+        to bottom,
+        var(--arrow-color) 0px,
+        var(--arrow-color) 5px,
+        transparent 5px,
+        transparent 10px
+      );
+    }
+
+    .arrow-head {
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 14px solid var(--arrow-color);
+      filter: drop-shadow(0 2px 3px rgba(192,86,33,0.25));
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 30px 20px 10px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      body { font-size: 14px; }
+      .card { padding: 20px 18px 18px; }
+      .card-title { font-size: 1.1rem; }
+      .step-indicator { display: none; }
+      .site-header { padding: 40px 16px 28px; }
+    }
+
+    /* ===== HIGHLIGHT BOX ===== */
+    .highlight-box {
+      background: linear-gradient(135deg, #fff8f2, #ffeedd);
+      border: 1.5px solid var(--accent-light);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: var(--text-sub);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== STEP INDICATOR ===== -->
+<nav class="step-indicator" id="stepNav" aria-label="Navigasi Topik">
+  <!-- generated by JS -->
+</nav>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="header-badge">Flowchart Terintegrasi</div>
+  <h1>SOP <span>Bakso Bento</span> Malang</h1>
+  <p class="subtitle">Panduan Operasional Standar — 16 Topik Utama dalam satu alur kerja terpadu</p>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="container" id="mainContainer">
+
+  <!-- CARD 1 -->
+  <div class="card" id="card-1" data-card="1">
+    <div class="card-header">
+      <div class="card-num">1</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-bullseye"></i></div>
+        <div class="card-title">Visi &amp; Misi</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">Visi</div>
+        <div class="section-body">Keunggulan produk dalam varian rasa, bentuk dan layanan</div>
+      </div>
+      <div class="section">
+        <div class="section-label">Misi</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Menciptakan menu bakso yang enak, hygiene &amp; terjangkau</li>
+            <li>Budaya Pelayanan Ramah dan Rasa Utama</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 2 -->
+  <div class="card" id="card-2" data-card="2">
+    <div class="card-header">
+      <div class="card-num">2</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-sitemap"></i></div>
+        <div class="card-title">Struktur Organisasi, Job Description &amp; Alur Kerja</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">2.1. Owner / Pengelola Utama : (Bakso Master)</div>
+        <div class="section-body">Bertanggung jawab penuh atas visi, manajemen keuangan, pemasaran, &amp; pengawsan kualitas (Quality Control)</div>
+      </div>
+      <div class="section">
+        <div class="section-label">2.2. Kepala Dapur (Head Chef/Master Bakso) : (Chef Urat / Master Kuah)</div>
+        <div class="section-body">Bertanggung jawab atas rasa, konsistensi tekstur bakso, kebrsihan bahan, dan stok bahan baku</div>
+      </div>
+      <div class="section">
+        <div class="section-label">2.3 Bagian Produksi (Tim Produksi) : (Artist Penthol)</div>
+        <div class="section-body">Fokus pada menyiapkan adonan, mencetak bakso, dan merebus</div>
+      </div>
+      <div class="section">
+        <div class="section-label">2.4 Kasir / Admin :</div>
+        <div class="section-body">Mengelola transaksi, inventaris harian, dan terkadang melayani pemesanan on line</div>
+      </div>
+      <div class="section">
+        <div class="section-label">2.5 Pramusaji / Server : (Warm Service Agent)</div>
+        <div class="section-body">Melayani pelanggan, menjaga kebersihan area makan (store atmosphere)</div>
+      </div>
+      <div class="section">
+        <div class="section-label">Audit — 2.6 Ouality Control :</div>
+        <div class="section-body">Memastikan konsistensi rasa, kekenyalan, dan kuah secara berkala agar pelanggan tidak kecewa</div>
+      </div>
+      <div class="section">
+        <div class="section-label">2.7 Audit Internal :</div>
+        <div class="section-body">Memastikan pelaksanaan kerja telah sesuai dengan SOP yang telah ditetapkan</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 3 -->
+  <div class="card" id="card-3" data-card="3">
+    <div class="card-header">
+      <div class="card-num">3</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-user-graduate"></i></div>
+        <div class="card-title">Rekrutmen &amp; pelatihan (teori &amp; praktek)</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ol class="step-list">
+        <li>
+          <div class="step-title">Pengajuan Kebutuhan</div>
+          Divisi Bakso sesuai kebutuhan mengajukan permohonan penambahan karyawan kepada Direktur
+        </li>
+        <li>
+          <div class="step-title">Pencarian Calon Karyawan</div>
+          Manager SDM, Keuangan &amp; Umum sesuai instruksi Direktur melaksanakan pencarian calon karyawan
+        </li>
+        <li>
+          <div class="step-title">Kualifikasi &amp; Seleksi</div>
+          Setelah melakukan kualifikasi terhadap data calon karyawan selanjutnya dilaksanakan seleksi dengan interview
+        </li>
+        <li>
+          <div class="step-title">Penandatanganan Kontrak</div>
+          Jika calon karyawan dinyatakan lulus proses seleksi, maka selanjutnya menandatangani kontrak kesepakatan kerja
+        </li>
+        <li>
+          <div class="step-title">Orientasi Training</div>
+          Semua karyawan yang dinyatakan lulus wajib mengikuti orientasi training sebelum melakukan pekerjaan baik teori &amp; praktek
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 4 -->
+  <div class="card" id="card-4" data-card="4">
+    <div class="card-header">
+      <div class="card-num">4</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-calendar-day"></i></div>
+        <div class="card-title">Alur Kerja Harian</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">1. Persiapan Pagi (Persiapan Usaha)</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Restock Bahan:</strong> Mengambil bahan-bahan seperti bakso, bumbu, mie, dan cabai dari penyimpanan</li>
+            <li><strong>Menata Tempat:</strong> Memastikan meja dan kursi terpasang di tempat yang strategis agar pelanggan nyaman.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">2. Operasional Jualan (Siang - Sore-Malam)</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Melayani Pelanggan:</strong> Menerima pesanan pelanggan.</li>
+            <li><strong>Memasak:</strong> Mengolah bakso sesuai pesanan.</li>
+            <li><strong>Mengantar Pesanan:</strong> Menyajikan bakso ke pelanggan.</li>
+            <li><strong>Menerima Pembayaran:</strong> Mengambil uang setelah pelanggan selesai makan.</li>
+            <li><strong>Orderan Online:</strong> Menerima pesanan ojek online yang masuk melalui tablet.</li>
+            <li><strong>Membersihkan:</strong> Membereskan mangkuk kotor agar meja siap digunakan kembali.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">3. Penutupan (Malam)</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Evaluasi:</strong> Memeriksa pendapatan harian.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 5 -->
+  <div class="card" id="card-5" data-card="5">
+    <div class="card-header">
+      <div class="card-num">5</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <div class="card-title">Pengaturan Jadwal, Shift, &amp; Tugas</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">1. Analisis dan Perencanaan (Planning):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Tentukan jumlah shift (misal: 2 shift, 3 shift) dan jumlah staf per shift berdasarkan kebutuhan bisnis.</li>
+            <li>Pastikan mematuhi regulasi: 40 jam/minggu, atau 7 jam/hari (6 hari kerja) atau 8 jam/hari (5 hari kerja).</li>
+            <li>Perhatikan aturan khusus (misalnya, karyawan perempuan di bawah 18 tahun/hamil dilarang shift malam 23.00-07.00).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">2. Pembuatan Jadwal (Scheduling):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Buat tabel (Excel/aplikasi) yang mencakup nama, tanggal, dan pola shift (pagi, sore, malam, libur).</li>
+            <li>Terapkan rotasi shift agar adil bagi semua karyawan.</li>
+            <li>Input data karyawan dan pastikan ada istirahat 1 jam pada setiap shift.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">3. Publikasi dan Sosialisasi:</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Distribusikan jadwal kepada karyawan (via chat, email, atau papan pengumuman) agar mereka memahami pola shift mereka.</li>
+            <li>Pastikan jadwal diakses jauh hari (minimal satu minggu sebelumnya).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">4. Pelaksanaan dan Absensi:</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Karyawan melakukan absensi (fingerprint, aplikasi HP, atau face recognition) sesuai jadwal.</li>
+            <li>Integrasikan data absensi dengan sistem shift untuk mempermudah perhitungan gaji.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">5. Penyesuaian dan Evaluasi (Adjusting &amp; Evaluating):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Tangani permintaan tukar shift atau cuti dengan prosedur tertulis.</li>
+            <li>Tinjau kembali jadwal secara berkala untuk penyesuaian kebutuhan, terutama jika terjadi lembur.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 6 -->
+  <div class="card" id="card-6" data-card="6">
+    <div class="card-header">
+      <div class="card-num">6</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-people-arrows"></i></div>
+        <div class="card-title">Koordinasi Efektif antara Karyawan</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">6.1 Pembagian Kerja yang Jelas:</div>
+        <div class="section-body">Tim dapur (produksi bakso/rebusan) dan tim pelayanan (pramusaji) harus sinkron agar makanan disajikan segar dan cepat.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">6.2 Komunikasi Cepat &amp; Jelas:</div>
+        <div class="section-body">Saat situasi ramai, staf pelayan harus menyampaikan pesanan dengan jelas, dan kasir mengatur alur antrean untuk menghindari kebingungan.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">6.3 Disiplin &amp; Tanggap:</div>
+        <div class="section-body">Karyawan harus disiplin waktu dan sigap dalam merespons kebutuhan pelanggan, terutama saat jam sibuk, untuk menghindari antrean panjang atau pesanan salah.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">6.4 Fokus Kualitas &amp; Pelayanan:</div>
+        <div class="section-body">Kekuatan utama ada pada rasa yang konsisten dan pelayanan ramah, yang didukung oleh kerjasama tim yang kompak.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 7 -->
+  <div class="card" id="card-7" data-card="7">
+    <div class="card-header">
+      <div class="card-num">7</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="card-title">Menentukan Target Omzet, HPP &amp; L/R</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-empty">
+        <i class="fa-solid fa-file-circle-question"></i>
+        Konten detail belum tersedia untuk topik ini.
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 8 -->
+  <div class="card" id="card-8" data-card="8">
+    <div class="card-header">
+      <div class="card-num">8</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+        <div class="card-title">Pengelolaan Persediaan Bahan Baku</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">7.1 Seleksi dan Penyimpanan Bahan Baku:</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Daging:</strong> Gunakan daging segar, bersihkan dari urat dan lemak</li>
+            <li><strong>Bahan Tambahan:</strong> Tepung tapioka (kadar amilosa 17% dan amilopektin 83%) untuk tekstur, serta es batu/air es untuk menjaga suhu adonan tetap rendah saat penggilingan agar emulsi daging maksimal.</li>
+            <li><strong>Bumbu:</strong> Bawang putih, garam, merica, dan penyedap rasa disimpan dalam kondisi kering dan bersih.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">7.2 Pengolahan/Produksi:</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Penggilingan:</strong> Daging digiling hingga halus, ditambahkan es batu/air es sedikit demi sedikit untuk membentuk adonan yang kenyal dan merata.</li>
+            <li><strong>Pencampuran:</strong> Daging halus dicampur dengan tepung tapioka, bumbu, dan putih telur, lalu digiling kembali hingga homogen.</li>
+            <li><strong>Pencetakan:</strong> Adonan dibentuk menjadi bulatan dengan tangan atau mesin, lalu melalui proses pengerasan (pengeringan).</li>
+            <li><strong>Perebusan:</strong> Bakso direbus dalam air panas (bukan mendidih bergolak) hingga mengapung (matang).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">7.3 Pasca Produksi:</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Pendinginan dan Pembekuan:</strong> Bakso didinginkan segera setelah direbus, lalu dibekukan (freezing)</li>
+            <li><strong>Pengemasan:</strong> Bakso dikemas dalam kemasan primer dan sekunder untuk mencegah kontaminasi.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 9 -->
+  <div class="card" id="card-9" data-card="9">
+    <div class="card-header">
+      <div class="card-num">9</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-fire-burner"></i></div>
+        <div class="card-title">Pengelolaan Produksi Penthol &amp; Kuah</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">8.1. Pengelolaan Produksi Pentol (Bakso)</div>
+        <div class="section-body">
+          <p>Proses produksi yang efisien memastikan pentol kenyal, lembut, dan konsisten.</p>
+          <ul class="sub-list">
+            <li><strong>Seleksi Bahan Baku:</strong> Gunakan daging sapi/ayam segar, es batu (untuk menjaga suhu adonan agar tetap dingin dan tekstur kenyal), tepung tapioka/sagu aren, pengenyal (food grade), bawang putih, bawang merah goreng, lada, dan kaldu.</li>
+            <li><strong>Penggilingan &amp; Pencampuran:</strong> Daging digiling halus bersama es batu dan bumbu. Tepung tapioka ditambahkan kemudian hingga tercampur rata. Proses ini bisa dilakukan di pabrik penggilingan daging untuk hasil lebih halus.</li>
+            <li><strong>Pencetakan &amp; Perebusan:</strong> Adonan dicetak bulat dan langsung dimasukkan ke dalam air panas (suhu sekitar 80°C, tidak mendidih bergolak agar bakso tidak pecah). Masak hingga mengapung (tanda matang).</li>
+            <li><strong>Pendinginan (Cooling):</strong> Setelah matang, tiriskan dan dinginkan pentol (bisa diangin-anginkan atau disiram air dingin) untuk menghentikan proses pemasakan dan menjaga kekenyalan.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">8.2. Pengelolaan Produksi Kuah Bakso</div>
+        <div class="section-body">
+          <p>Kuah bakso yang enak didapat dari kaldu tulang yang maksimal.</p>
+          <ul class="sub-list">
+            <li><strong>Pembuatan Kaldu:</strong> Rebus tulang sapi/tetelan dalam jumlah banyak selama 3-4 jam untuk menghasilkan kaldu yang gurih.</li>
+            <li><strong>Bumbu Kuah:</strong> Gunakan kombinasi bawang putih dan bawang merah yang sudah digoreng, lalu dihaluskan. Tambahkan garam, gula, dan merica sesuai takaran.</li>
+            <li><strong>Manajemen Kuah:</strong> Hindari memanaskan kuah terlalu lama dengan api besar, karena air akan menguap dan menyebabkan kuah menjadi asin. Rebus ulang kuah setiap 12-24 jam untuk menjaga kualitas dan mencegah basi.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">8.3. Pengelolaan Penyimpanan dan Stok</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Penyimpanan Pentol:</strong> Pentol matang sebaiknya disimpan dalam freezer (suhu -18°C) dalam kemasan vakum untuk hasil terbaik. Jika tanpa kulkas, pentol harus dihangatkan kembali setiap hari.</li>
+            <li><strong>Manajemen Bahan Baku:</strong> Lakukan manajemen persediaan (stok) terutama untuk daging yang mudah rusak. Gunakan metode First In, First Out (FIFO) untuk memastikan bahan baku terlama digunakan lebih dulu.</li>
+            <li><strong>Pengemasan:</strong> Untuk jualan frozen, gunakan plastik vakum untuk menghindari kontaminasi bakteri dan memperpanjang masa simpan.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 10 -->
+  <div class="card" id="card-10" data-card="10">
+    <div class="card-header">
+      <div class="card-num">10</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+        <div class="card-title">Pengendalian Kualitas Produk</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">9.1 Bahan Baku &amp; Produksi:</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Kualitas Daging:</strong> Memilih daging segar dan berkualitas baik.</li>
+            <li><strong>Standar Formula:</strong> Memperhatikan perbandingan daging dan tepung tapioka untuk mencapai tekstur kenyal yang diinginkan.</li>
+            <li><strong>Higienitas:</strong> Menjaga kebersihan selama pemrosesan untuk menekan kandungan mikroba (TPC) agar tidak melebihi standar</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">9.2 Pengendalian Proses (QC):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Pengecekan Tekstur:</strong> Memastikan bakso tidak kurang kenyal atau hancur.</li>
+            <li><strong>Standar Operasional (SOP):</strong> Menerapkan SOP yang ketat pada setiap tahap produksi.</li>
+            <li><strong>Analisis Kecacatan:</strong> Menggunakan alat seperti diagram fishbone dan pareto untuk mengidentifikasi penyebab produk cacat, seperti masalah pada manusia atau metode kerja.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">9.3 Penyimpanan &amp; Pengemasan:</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Penyimpanan Dingin:</strong> Bakso harus disimpan di freezer untuk menjaga kesegaran dan memperpanjang masa simpan.</li>
+            <li><strong>Kemasan:</strong> Menggunakan kemasan yang rapat (vacum) untuk menjaga kualitas.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">9.4 Uji Kualitas:</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Uji Organoleptik:</strong> Memeriksa bentuk bulat, permukaan bersih/tidak berlendir, dan aroma yang khas.</li>
+            <li><strong>Uji Berkala:</strong> Melakukan pengujian hasil (tes cicip/lab) secara rutin, terutama untuk produk frozen.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 11 -->
+  <div class="card" id="card-11" data-card="11">
+    <div class="card-header">
+      <div class="card-num">11</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-handshake"></i></div>
+        <div class="card-title">Standart Pelayanan Tamu</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">10.1 Penyambutan (Greeting):</div>
+        <div class="section-body">Tamu disambut dengan salam, senyum, dan ramah saat masuk outlet.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">10.2 Pemesanan:</div>
+        <div class="section-body">Mencatat pesanan dengan detail (jenis bakso, mie, tingkat kepedasan) dan konfirmasi ulang agar tidak salah.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">10.3 Penyajian (Serving):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Pastikan kuah panas dan bakso disajikan segar.</li>
+            <li>Penyajian sesuai urutan antrean.</li>
+            <li>Meja dalam kondisi bersih sebelum dan sesudah digunakan.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">10.4 Kebersihan:</div>
+        <div class="section-body">Menjaga kebersihan area makan, peralatan makan (sendok, garpu, mangkok), dan toilet jika tersedia.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">10.5 Penanganan Keluhan:</div>
+        <div class="section-body">Mendengarkan komplain tanpa menyela, meminta maaf, dan segera memberikan solusi/ganti makanan.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">10.6 SOP Khusus (Bungkus/Takeaway):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Tanya dengan jelas keinginan pembeli.</li>
+            <li>Rebus bakso dan kuah secara terpisah (jika memungkinkan) agar tidak lembek.</li>
+            <li>Kemas sambal, saus, dan kecap secara terpisah.</li>
+            <li>Pastikan kemasan plastik/styrofoam/paper bowl aman (tidak bocor).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 12 -->
+  <div class="card" id="card-12" data-card="12">
+    <div class="card-header">
+      <div class="card-num">12</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-stopwatch"></i></div>
+        <div class="card-title">Pengendalian Efisiensi Waktu Penyajian</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <p>Berikut adalah strategi untuk meningkatkan efisiensi penyajian bakso:</p>
+      <div class="section">
+        <div class="section-label">Penerapan Lean Manufacturing &amp; VSM:</div>
+        <div class="section-body">Menggunakan Value Stream Mapping (VSM) untuk mengidentifikasi dan membuang aktivitas non-nilai tambah (NVA) atau waste dalam proses penyajian.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">Persiapan Bahan Baku (Pre-cooking):</div>
+        <div class="section-body">Memastikan bakso, mi, dan bahan pelengkap lainnya sudah direbus atau disiapkan sebelumnya, sehingga saat ada pesanan, waktu pemanasan hanya sebentar.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">Optimalisasi Tata Letak (Layout) Meja Racik:</div>
+        <div class="section-body">Mengatur bahan-bahan (bakso, mi, kuah, bumbu) dalam jangkauan tangan terdekat untuk meminimalkan gerakan peracik.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">Penggunaan Metode Just in Time (JIT):</div>
+        <div class="section-body">Mengelola persediaan bahan baku agar tidak kekurangan, sehingga tidak ada waktu tunggu akibat kehabisan bahan.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">Standarisasi Porsi:</div>
+        <div class="section-body">Menggunakan sendok takar atau mangkok standar untuk mempercepat proses peracikan bumbu dan kuah.</div>
+      </div>
+      <div class="highlight-box">
+        Dengan mengelompokkan aktivitas menjadi Value Added (VA) dan Non-Value Added (NVA), peracik dapat fokus pada langkah yang mempercepat layanan.
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 13 -->
+  <div class="card" id="card-13" data-card="13">
+    <div class="card-header">
+      <div class="card-num">13</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-receipt"></i></div>
+        <div class="card-title">Pencatatan Penjualan Operasional</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <p>Berikut komponen utama pencatatan keuangan usaha bakso:</p>
+      <div class="section">
+        <div class="section-label">Pencatatan Penjualan Harian:</div>
+        <div class="section-body">Catat jumlah porsi bakso yang terjual, varian (biasa/urat/telur), serta minuman setiap harinya.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">Pencatatan Pengeluaran (Bahan Baku &amp; Operasional):</div>
+        <div class="section-body">Catat pembelian bahan utama seperti daging, bumbu, mie, serta biaya harian (gas, es batu, parkir) untuk memantau kas keluar.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">Pengelolaan Stok (Inventaris):</div>
+        <div class="section-body">Pantau stok daging dan bahan baku lainnya untuk menghindari kekurangan bahan dan mengatur pembelian ulang.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">Laporan Laba Rugi Sederhana:</div>
+        <div class="section-body">Hitung total pendapatan harian dikurangi total biaya operasional untuk mengetahui laba bersih.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 14 -->
+  <div class="card" id="card-14" data-card="14">
+    <div class="card-header">
+      <div class="card-num">14</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-wrench"></i></div>
+        <div class="card-title">Inventarisasi &amp; Pemeliharaan Peralatan</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">1. Prosedur Pemeliharaan Peralatan Bakso</div>
+        <div class="section-body">
+          <p><strong>Pembersihan (Cleaning):</strong></p>
+          <ul class="sub-list">
+            <li><strong>Mesin Penggiling Daging (Meat Grinder/Silent Cutter):</strong> Lepas komponen (pisau, saringan), bersihkan sisa daging dengan air panas dan sabun food grade untuk mencegah kontaminasi.</li>
+            <li><strong>Alat Pencetak Bakso:</strong> Cuci bersih setelah digunakan dan keringkan untuk mencegah kerak adonan.</li>
+            <li><strong>Wajan/Panci Besar:</strong> Bersihkan dari lemak yang menempel.</li>
+            <li><strong>Pengeringan:</strong> Pastikan semua peralatan logam (stainless steel) kering total sebelum disimpan untuk mencegah karat.</li>
+            <li><strong>Pelumasan &amp; Perawatan:</strong> Oleskan food grade oil pada pisau penggiling dan bagian mesin yang bergerak secara berkala.</li>
+            <li><strong>Penyimpanan:</strong> Simpan di tempat bersih, tertutup, dan kering.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">2. Prosedur Penghitungan Peralatan (Stock Opname)</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Harian:</strong> Hitung jumlah sendok adonan, cetakan, dan wadah sebelum dan sesudah operasi. Cek kebersihan mesin penggiling sebelum digunakan kembali.</li>
+            <li><strong>Mingguan/Bulanan (Inventaris):</strong> Gunakan formulir checklist inventaris. Identifikasi: List semua alat (Mesin giling, pisau, wajan, kompor, meja kerja, baskom, timbangan). Kondisi: Tandai kondisi alat (Baik, Rusak, Perlu Perbaikan). Penyesuaian: Hitung jumlah fisik vs catatan.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">3. Aspek Higienis dan Keamanan</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Pastikan mesin penggiling tidak berkarat.</li>
+            <li>Gunakan pembersih yang tidak meninggalkan bau pada alat.</li>
+            <li>Pastikan suhu penyimpanan mesin (jika ada cooler) terjaga.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="highlight-box">Dengan menerapkan prosedur ini secara disiplin, kualitas bakso tetap terjaga, higienitas terjamin, dan masa pakai alat lebih lama.</div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 15 -->
+  <div class="card" id="card-15" data-card="15">
+    <div class="card-header">
+      <div class="card-num">15</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-chart-bar"></i></div>
+        <div class="card-title">Evaluasi Kinerja Harian, Mingguan &amp; Bulanan</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="section">
+        <div class="section-label">15.1 Aspek Produk (Product):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Kualitas &amp; Rasa:</strong> Evaluasi konsistensi rasa, tekstur kenyal (SNI), dan aroma khas daging.</li>
+            <li><strong>Inovasi Menu:</strong> Penambahan varian bakso (mercon, keju, isi telur) atau opsi vegetarian/vegan dapat meningkatkan daya tarik.</li>
+            <li><strong>Kualitas Bahan Baku:</strong> Memastikan daging segar dan higienis.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">15.2 Aspek Keuangan (Price &amp; Cost):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Harga Jual:</strong> Harus terjangkau namun tetap memberikan margin keuntungan, umumnya sekitar Rp15.000 - Rp25.000 per porsi.</li>
+            <li><strong>Manajemen Modal:</strong> Pemantauan arus kas harian, pembelian bahan baku, dan biaya operasional (gas, sewa tempat).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">15.3 Aspek Pemasaran (Promotion &amp; Place):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Lokasi:</strong> Tempat strategis (pinggir jalan, dekat perkantoran/sekolah) sangat memengaruhi volume penjualan.</li>
+            <li><strong>Promosi:</strong> Penggunaan media sosial dan promosi harga (diskon, paket) untuk menarik pelanggan baru.</li>
+            <li><strong>Diferensiasi:</strong> Konsep unik (misalnya bakso prasmanan) untuk membedakan diri dari kompetitor.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">15.4 Aspek Operasional (Operational):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li><strong>Pelayanan:</strong> Kecepatan dan keramahan dalam melayani pelanggan.</li>
+            <li><strong>Kebersihan:</strong> Tempat usaha yang bersih meningkatkan kenyamanan.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="highlight-box">Dengan mengevaluasi aspek-aspek di atas, pengusaha dapat mengetahui kekuatan dan kelemahan bisnis untuk merancang strategi perbaikan, terutama jika menghadapi penurunan penjualan.</div>
+    </div>
+  </div>
+
+  <div class="arrow-connector"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+  <!-- CARD 16 -->
+  <div class="card" id="card-16" data-card="16">
+    <div class="card-header">
+      <div class="card-num">16</div>
+      <div class="card-title-block">
+        <div class="card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="card-title">Pengawasan oleh Quality Control &amp; Audit Internal</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <p>Berikut adalah poin penting Quality Control untuk warung bakso:</p>
+      <div class="section">
+        <div class="section-label">Pengecekan Bahan Baku (Raw Material):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Memastikan daging sapi segar, tidak berbau busuk, dan tidak mengandung pengawet berbahaya.</li>
+            <li>Memeriksa kesegaran bahan pendukung (sayuran, mie, tauge).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">Standar Produksi (Proses):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Menggunakan resep yang konsisten (timbangan daging dan bumbu yang tetap) agar rasa tidak berubah.</li>
+            <li>Memastikan bakso kenyal dan halus, tidak terlalu lembek.</li>
+            <li>Menjaga suhu penyimpanan bahan baku dan produk setengah jadi.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">Quality Control Kuah:</div>
+        <div class="section-body">Memastikan kuah bakso memiliki kaldu yang konsisten, tidak terlalu asin/hambar, dan bening.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">Penyajian (Service Quality):</div>
+        <div class="section-body">
+          <ul class="sub-list">
+            <li>Memastikan kebersihan mangkuk dan alat makan.</li>
+            <li>Memastikan bakso disajikan dalam keadaan panas.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">Metode PDCA (Plan, Do, Check, Act):</div>
+        <div class="section-body">Menerapkan siklus perencanaan, pelaksanaan, pengecekan, dan tindakan perbaikan terus-menerus untuk menjaga standar kualitas bakso.</div>
+      </div>
+      <div class="highlight-box">
+        rasa bakso maupun kuah. Saat konsumen membeli pada siang hari dengan menu yang sama dengan sore hari biasanya terdapat perbedaan k...
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <p>© Bakso Bento Malang — Flowchart SOP Terintegrasi · 16 Topik Utama</p>
+</footer>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+  /* === Build step indicator === */
+  const nav = document.getElementById('stepNav');
+  const cards = document.querySelectorAll('.card[data-card]');
+  cards.forEach((card, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'step-dot';
+    dot.title = 'Topik ' + (i + 1);
+    dot.addEventListener('click', () => {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    nav.appendChild(dot);
+  });
+
+  /* === Intersection Observer for active dot === */
+  const dots = nav.querySelectorAll('.step-dot');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = parseInt(entry.target.getAttribute('data-card')) - 1;
+        dots.forEach(d => d.classList.remove('active'));
+        if (dots[idx]) dots[idx].classList.add('active');
+      }
+    });
+  }, { threshold: 0.4 });
+
+  cards.forEach(card => observer.observe(card));
+
+  /* === Reveal animation on scroll === */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  cards.forEach(card => {
+    card.style.animationPlayState = 'paused';
+    revealObserver.observe(card);
+  });
+</script>
+</body>
+</html>
